@@ -6,18 +6,22 @@ import static java.lang.IO.println;
 
 public class ResponseHelper {
     public static void printRequestResponseInfo(String query, String model, String response) {
-        System.out.printf("query: %s%n", query);
-        System.out.printf("model: %s%n", model);
+        println("query: " + query);
+        println("model: " + model);
         println(response);
         print_line();
+    }
+
+    public static void printRequestResponseInfo(String query, String model, ChatResponse response) {
+        printRequestResponseInfo(query, model, response.aiMessage().text());
     }
 
     public static void printTokenUsage(ChatResponse response) {
         if (response.tokenUsage() != null) {
             println("Token Usage: " + response.tokenUsage());
-            println("  Input Tokens: " + response.tokenUsage().inputTokenCount());
+            println("  Input Tokens : " + response.tokenUsage().inputTokenCount());
             println("  Output Tokens: " + response.tokenUsage().outputTokenCount());
-            println("  Total Tokens: " + response.tokenUsage().totalTokenCount());
+            println("  Total Tokens : " + response.tokenUsage().totalTokenCount());
         } else {
             println("Token Usage: Not available");
         }

@@ -2,35 +2,39 @@ package prompt;
 
 import dev.langchain4j.model.anthropic.AnthropicChatModel;
 import dev.langchain4j.model.anthropic.AnthropicChatModelName;
+import dev.langchain4j.model.chat.ChatModel;
+import dev.langchain4j.model.chat.response.ChatResponse;
+import dev.langchain4j.model.input.Prompt;
 import dev.langchain4j.model.input.structured.StructuredPrompt;
-import dev.langchain4j.service.AiServices;
-import dev.langchain4j.service.UserMessage;
+import dev.langchain4j.model.input.structured.StructuredPromptProcessor;
 
+import static util.ResponseHelper.printRequestResponseInfo;
+
+// the recommended approach: the prompt as a proper domain object.
+// (define the template as an annotation on a class, and the variables become fields)
 public class StructuredPromptExample {
 
-    @StructuredPrompt("Tell me about {{topic}} in {{language}}. Be concise.")
-    record MyPrompt(String topic, String language) {
-    }
+    private static final AnthropicChatModelName MODEL_NAME = AnthropicChatModelName.CLAUDE_SONNET_4_6;
 
-    interface AssistantService {
-        String ask(@UserMessage MyPrompt prompt);
-    }
+    static void main() {
+        @StructuredPrompt("Translate the following text to {{language}}: {{text}}")
+        record TranslationPrompt(String language, String text) {}
 
-    static void main(String[] args) {
-
-        var model = AnthropicChatModel.builder()
+        ChatModel model = AnthropicChatModel.builder()
                 .apiKey(System.getenv("ANTHROPIC_API_KEY"))
-                .modelName(AnthropicChatModelName.CLAUDE_SONNET_4_6)
+                .modelName(MODEL_NAME)
                 .build();
 
-        AssistantService service = AiServices.builder(AssistantService.class)
-                .chatModel(model)
-                .build();
+        Prompt promptFrench = StructuredPromptProcessor.toPrompt(
+                new TranslationPrompt("French", "Hello, world!")
+        );
+        ChatResponse responseFrench = model.chat(promptFrench.toUserMessage());
+        printRequestResponseInfo(promptFrench.text(), MODEL_NAME.name(), responseFrench);
 
-        // Use the structured prompt
-        var prompt = new MyPrompt("quantum computing", "French");
-        String response = service.ask(prompt);
-
-        System.out.println(response);
+        Prompt promptGerman = StructuredPromptProcessor.toPrompt(
+                new TranslationPrompt("German", "Hello, world!")
+        );
+        ChatResponse responseGerman = model.chat(promptGerman.toUserMessage());
+        printRequestResponseInfo(promptGerman.text(), MODEL_NAME.name(), responseGerman);
     }
 }

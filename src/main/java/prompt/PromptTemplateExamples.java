@@ -3,24 +3,23 @@ package prompt;
 import dev.langchain4j.model.anthropic.AnthropicChatModel;
 import dev.langchain4j.model.anthropic.AnthropicChatModelName;
 import dev.langchain4j.model.chat.ChatModel;
+import dev.langchain4j.model.chat.response.ChatResponse;
 import dev.langchain4j.model.input.Prompt;
 import dev.langchain4j.model.input.PromptTemplate;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static util.ResponseHelper.printRequestResponseInfo;
 
-// TODO
 public class PromptTemplateExamples {
 
     private static final AnthropicChatModelName MODEL_NAME = AnthropicChatModelName.CLAUDE_SONNET_4_6;
 
-    // {{it}} ist fix!!!!
-    static class PromptTemplateWithSingleVariable {
+    // PromptTemplate with default variable name "it". Simple to use.
+    static class PromptTemplateWithDefaultVariableName {
 
-        static void main(String[] args) {
-            var stringTemplate = "Give me a brief summary in one sentence about the color in {{it}}.";
+        void main() {
+            var stringTemplate = "Translate the following text to french: {{it}}";
             PromptTemplate promptTemplate = PromptTemplate.from(stringTemplate);
 
             ChatModel model = AnthropicChatModel.builder()
@@ -28,20 +27,21 @@ public class PromptTemplateExamples {
                     .modelName(MODEL_NAME)
                     .build();
 
-            Prompt promptRed = promptTemplate.apply("red");
-            String response = model.chat(promptRed.text());
-            printRequestResponseInfo(promptRed.text(), MODEL_NAME.name(), response);
+            Prompt promptHello = promptTemplate.apply("Hello World");
+            ChatResponse responseHello = model.chat(promptHello.toUserMessage());
+            printRequestResponseInfo(promptHello.text(), MODEL_NAME.name(), responseHello);
 
-            Prompt promptBlue = promptTemplate.apply("blue");
-            String responseBlue = model.chat(promptBlue.text());
-            printRequestResponseInfo(promptBlue.text(), MODEL_NAME.name(), responseBlue);
+            Prompt promptBye = promptTemplate.apply("Bye World");
+            ChatResponse responseBye = model.chat(promptBye.toUserMessage());
+            printRequestResponseInfo(promptBye.text(), MODEL_NAME.name(), responseBye);
         }
     }
 
-    static class PromptTemplateWithMultipleVariables {
+    // PromptTemplate with a user defined variable name. More flexible and reusable.
+    static class PromptTemplateWithNamedVariable {
 
-        static void main(String[] args) {
-            var stringTemplate = "Give me a brief summary in {{numberOfSentences}} sentence about the color in {{color}}.";
+        void main() {
+            var stringTemplate = "Translate the following text to french: {{text}}";
             PromptTemplate promptTemplate = PromptTemplate.from(stringTemplate);
 
             ChatModel model = AnthropicChatModel.builder()
@@ -49,15 +49,38 @@ public class PromptTemplateExamples {
                     .modelName(MODEL_NAME)
                     .build();
 
-            Map<String, Object> variables = new HashMap<>();
-            variables.put("numberOfSentences", "2");
-            variables.put("color", "yellow");
+            Prompt promptHello = promptTemplate.apply(Map.of(
+                    "text", "Hello World")
+            );
+            ChatResponse responseHello = model.chat(promptHello.toUserMessage());
+            printRequestResponseInfo(promptHello.text(), MODEL_NAME.name(), responseHello);
 
-            // List.of() does not work
-            var _variables = Map.of("numberOfSentences", "2", "color", "yellow");
+            Prompt promptBye = promptTemplate.apply(Map.of(
+                    "text", "Bye World")
+            );
+            ChatResponse responseBye = model.chat(promptBye.toUserMessage());
+            printRequestResponseInfo(promptBye.text(), MODEL_NAME.name(), responseBye);
+        }
+    }
 
-            Prompt prompt = promptTemplate.apply(variables);
-            String response = model.chat(prompt.text());
+    // PromptTemplate with 2 user defined variable names (text and language).
+    static class PromptTemplateWithMultipleVariables {
+
+        void main() {
+            var stringTemplate = "Translate the following text to {{language}}: {{text}}";
+            PromptTemplate promptTemplate = PromptTemplate.from(stringTemplate);
+
+            ChatModel model = AnthropicChatModel.builder()
+                    .apiKey(System.getenv("ANTHROPIC_API_KEY"))
+                    .modelName(MODEL_NAME)
+                    .build();
+
+            Prompt prompt = promptTemplate.apply(Map.of(
+                    "text", "Hello World",
+                    "language", "French"
+            ));
+
+            ChatResponse response = model.chat(prompt.toUserMessage());
             printRequestResponseInfo(prompt.text(), MODEL_NAME.name(), response);
         }
     }

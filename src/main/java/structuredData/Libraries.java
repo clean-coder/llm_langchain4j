@@ -7,7 +7,7 @@ public record Libraries(List<Library> libraries) {
     @Override
     public String toString() {
         return libraries.stream()
-                .map(lib -> lib.toString())
+                .map(Library::toString)
                 .collect(Collectors.joining("\n"));
     }
 }

@@ -13,14 +13,6 @@
     </properties>
 
     <dependencies>
-        <!-- Source: https://mvnrepository.com/artifact/dev.langchain4j/langchain4j -->
-        <!-- for AIServices -->
-        <dependency>
-            <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j</artifactId>
-            <version>1.12.2</version> <!-- ✅ Use latest version: check https://github.com/langchain4j/langchain4j -->
-        </dependency>
-
         <!-- core functionality: abstraction of the ChatModel -->
         <dependency>
             <groupId>dev.langchain4j</groupId>
@@ -54,6 +46,12 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.5.13</version>
+        </dependency>
+        <!-- for AIServices -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j</artifactId>
+            <version>1.12.2</version> <!-- ✅ Use latest version: check https://github.com/langchain4j/langchain4j -->
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

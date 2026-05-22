@@ -2,20 +2,15 @@ package parallel;
 
 import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.UserMessage;
-import dev.langchain4j.model.anthropic.AnthropicChatModel;
 import dev.langchain4j.model.chat.ChatModel;
-import dev.langchain4j.model.googleai.GoogleAiGeminiChatModel;
-import dev.langchain4j.model.openai.OpenAiChatModel;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static java.lang.IO.println;
+import static parallel.helper.FileHelper.writeToFile;
+import static parallel.helper.ModelHelper.*;
 
 ///
 /// LangChain4j is fundamentally different from LangChain — not just in API design, but in mindset.
@@ -42,64 +37,33 @@ public class ParallelChains {
     }
 
     private static String formatSingleLLMResult(LibraryResult result) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("--- ")
-                .append(result.llmName)
-                .append(" ---\n")
-                .append(result.response)
-                .append("\n\n");
-        return sb.toString();
+        return "--- " +
+               result.llmName +
+               " ---\n" +
+               result.response +
+               "\n\n";
     }
 
     private static String invoke(ChatModel model, String system, String user) {
         return model.chat(SystemMessage.from(system), UserMessage.from(user)).aiMessage().text();
     }
 
-    private static void writeToFile(String content) {
-        Path path = Paths.get("output.md");
-        try {
-            Files.writeString(path, content);
-            System.out.println("File written successfully.");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    static void main(String[] args) throws Exception {
-        // 1 — Set up the three models
-        ChatModel claude = AnthropicChatModel.builder()
-                .apiKey(System.getenv("ANTHROPIC_API_KEY"))
-                .modelName("claude-sonnet-4-5-20250929")
-                .temperature(0.3)
-                .build();
-
-        ChatModel openai = OpenAiChatModel.builder()
-                .apiKey(System.getenv("OPENAI_API_KEY"))
-                .modelName("gpt-4o-mini")
-                .temperature(0.3)
-                .build();
-
-        ChatModel gemini = GoogleAiGeminiChatModel.builder()
-                .apiKey(System.getenv("GEMINI_API_KEY"))
-                .modelName("gemini-2.5-flash-lite")
-                .temperature(0.3)
-                .build();
-
+    static void main() throws Exception {
         String systemPrompt = "What are the most popular programming libraries for accessing LLMs?";
         String userPrompt = "Programming Language: Python, Number of Libraries: 5. " +
                             "Reply as JSON: {\"libraries\": [{\"name\",\"provider\",\"url\",\"language\",\"version\"}]}";
 
-        // 2 — Fan out: run all three in parallel (equivalent to RunnableParallel)
+        // Fan out: run all three in parallel (equivalent to RunnableParallel)
         CompletableFuture<LibraryResult> claudeFuture = CompletableFuture.supplyAsync(() ->
-                new LibraryResult("claude", invoke(claude, systemPrompt, userPrompt)));
+                new LibraryResult("claude", invoke(CLAUDE, systemPrompt, userPrompt)));
 
         CompletableFuture<LibraryResult> openaiFuture = CompletableFuture.supplyAsync(() ->
-                new LibraryResult("openai", invoke(openai, systemPrompt, userPrompt)));
+                new LibraryResult("openai", invoke(OPENAI, systemPrompt, userPrompt)));
 
         CompletableFuture<LibraryResult> geminiFuture = CompletableFuture.supplyAsync(() ->
-                new LibraryResult("gemini", invoke(gemini, systemPrompt, userPrompt)));
+                new LibraryResult("gemini", invoke(GEMINI, systemPrompt, userPrompt)));
 
-        // 3 — Collect all results (blocks until all three complete)
+        // Collect all results (blocks until all three complete)
         CompletableFuture.allOf(claudeFuture, openaiFuture, geminiFuture).join();
 
         List<LibraryResult> results = new ArrayList<>();
@@ -107,12 +71,11 @@ public class ParallelChains {
         results.add(new LibraryResult(openaiFuture.get().llmName(), openaiFuture.get().response()));
         results.add(new LibraryResult(geminiFuture.get().llmName(), geminiFuture.get().response()));
 
-        // 4 — Consolidate with a single Claude call (same as your Python step 2)
+        // Consolidate with a single Claude call (same as your Python step 2)
         String consolidationPrompt = buildConsolidationPrompt(results);
         println("Consolidation Prompt:\n" + consolidationPrompt);
-        String consolidated = invoke(claude, "You are a helpful assistant.", consolidationPrompt);
+        String consolidated = invoke(CLAUDE, "You are a helpful assistant.", consolidationPrompt);
 
-        //println(consolidated);
-        writeToFile(consolidated);
+        writeToFile(consolidated, "llm_libraries.md");
     }
 }

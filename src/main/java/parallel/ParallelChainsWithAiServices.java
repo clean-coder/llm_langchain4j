@@ -52,8 +52,6 @@ public class ParallelChainsWithAiServices {
     @StructuredPrompt("""
             Summarize these LLM responses about {{language}} LLM libraries in one markdown table,
             with a column per provider:
-            
-            
             {{results}}
             """)
     record ConsolidatePrompt(String language, List<LibraryResult> results) {

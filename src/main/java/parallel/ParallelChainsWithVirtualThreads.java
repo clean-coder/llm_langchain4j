@@ -1,6 +1,6 @@
 package parallel;
 
-import parallel.service.LibraryResult;
+import parallel.dataStructure.LibraryResult;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;

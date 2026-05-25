@@ -1,6 +1,4 @@
-package parallel.service;
-
-import structuredData.Libraries;
+package parallel.dataStructure;
 
 public record LibraryResult(String llmName, Libraries response) {
     @Override

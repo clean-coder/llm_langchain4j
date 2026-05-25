@@ -1,6 +1,6 @@
 package parallel;
 
-import parallel.service.LibraryResult;
+import parallel.dataStructure.LibraryResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ import static parallel.helper.ModelHelper.*;
 import static parallel.service.ConsolidateLibrariesService.consolidate;
 import static parallel.service.FetchLibrariesService.getLLMLibraries;
 
-public class ParallelChainsWithAiServices {
+public class ParallelChainsWithCompletableFuture {
 
     static void main() throws Exception {
         var numberOfItems = 5;

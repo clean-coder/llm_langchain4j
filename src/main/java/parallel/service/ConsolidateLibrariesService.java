@@ -3,6 +3,7 @@ package parallel.service;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.input.structured.StructuredPrompt;
 import dev.langchain4j.service.AiServices;
+import parallel.dataStructure.LibraryResult;
 
 import java.util.List;
 

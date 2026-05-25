@@ -1,4 +1,4 @@
-package parallel;
+package parallel.legacy;
 
 import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.UserMessage;
@@ -61,7 +61,7 @@ public class ParallelChains {
                 new LibraryResult("openai", invoke(OPENAI, systemPrompt, userPrompt)));
 
         CompletableFuture<LibraryResult> geminiFuture = CompletableFuture.supplyAsync(() ->
-                new LibraryResult("gemini", invoke(GEMINI, systemPrompt, userPrompt)));
+                new LibraryResult("gemini", invoke(GOOGLE, systemPrompt, userPrompt)));
 
         // Collect all results (blocks until all three complete)
         CompletableFuture.allOf(claudeFuture, openaiFuture, geminiFuture).join();

@@ -1,9 +1,6 @@
 package parallel;
 
-import dev.langchain4j.model.chat.ChatModel;
-import dev.langchain4j.model.input.structured.StructuredPrompt;
-import dev.langchain4j.service.AiServices;
-import structuredData.Libraries;
+import parallel.service.LibraryResult;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -13,6 +10,8 @@ import java.util.concurrent.Future;
 import static java.lang.IO.println;
 import static parallel.helper.FileHelper.writeToFile;
 import static parallel.helper.ModelHelper.*;
+import static parallel.service.ConsolidateLibrariesService.consolidate;
+import static parallel.service.FetchLibrariesService.getLLMLibraries;
 
 ///
 /// Virtual threads (Project Loom, finalized in Java 21) are ideal for I/O-bound tasks like LLM calls.
@@ -36,62 +35,6 @@ import static parallel.helper.ModelHelper.*;
 ///
 public class ParallelChainsWithVirtualThreads {
 
-    @StructuredPrompt("""
-            What are the {{numOfItems}} most popular programming libraries in {{language}} for accessing LLMs?
-            Reply with name, provider, url, language, version for each library""")
-    record LibraryPrompt(int numOfItems, String language) {
-    }
-
-    interface LibraryService {
-        @dev.langchain4j.service.SystemMessage("You are an ai developer expert.")
-        Libraries getLibraries(@dev.langchain4j.service.UserMessage LibraryPrompt prompt);
-    }
-
-    private static Libraries getLLMLibraries(ChatModel model, String language, int noOfItems) {
-        LibraryService service = AiServices.builder(LibraryService.class)
-                .chatModel(model)
-                .build();
-
-        var prompt = new LibraryPrompt(noOfItems, language);
-        Libraries libraries = service.getLibraries(prompt);
-
-        println("Popular Programming Libraries [from " + model.toString() + "] in " + language + " for accessing LLMs:");
-        return libraries;
-    }
-
-    record LibraryResult(String llmName, Libraries response) {
-        @Override
-        public String toString() {
-            return "--- " +
-                   llmName +
-                   " ---\n" +
-                   response +
-                   "\n\n";
-        }
-    }
-
-    @StructuredPrompt("""
-            Summarize these LLM responses about {{language}} LLM libraries in one markdown table,
-            with a column per provider:
-            {{results}}
-            """)
-    record ConsolidatePrompt(String language, List<LibraryResult> results) {
-    }
-
-    interface ConsolidateService {
-        @dev.langchain4j.service.SystemMessage("You are an ai developer expert.")
-        String consolidate(@dev.langchain4j.service.UserMessage ConsolidatePrompt prompt);
-    }
-
-    private static String consolidate(ChatModel model, String language, List<LibraryResult> llmResults) {
-        ConsolidateService service = AiServices.builder(ConsolidateService.class)
-                .chatModel(model)
-                .build();
-
-        var prompt = new ConsolidatePrompt(language, llmResults);
-        return service.consolidate(prompt);
-    }
-
     static void main() throws Exception {
         var numberOfItems = 5;
         var language = "Python";
@@ -105,7 +48,7 @@ public class ParallelChainsWithVirtualThreads {
                     new LibraryResult("openai", getLLMLibraries(OPENAI, language, numberOfItems)));
 
             Future<LibraryResult> geminiFuture = executor.submit(() ->
-                    new LibraryResult("gemini", getLLMLibraries(GEMINI, language, numberOfItems)));
+                    new LibraryResult("gemini", getLLMLibraries(GOOGLE, language, numberOfItems)));
 
             // Blocks until each result is ready; executor auto-closes after try block
             List<LibraryResult> results = List.of(

@@ -13,7 +13,7 @@ import static util.ResponseHelper.printRequestResponseInfo;
 
 // needs a system prompt. otherwise the model will not use the tool and give generic packing advice without checking the weather forecast first.
 public class WithToolsOpenAI {
-    private static final OpenAiChatModelName MODEL_NAME = OpenAiChatModelName.GPT_4_1_NANO;
+    private static final OpenAiChatModelName MODEL_NAME = OpenAiChatModelName.GPT_5_MINI;
     private ChatMemory memory = MessageWindowChatMemory.withMaxMessages(10);
 
     private static final String SYSTEM_PROMPT = """
@@ -25,7 +25,7 @@ public class WithToolsOpenAI {
             - Weather conditions
             - Temperature in a city
             
-            You MUST use the get_forecast tool to check the current weather before providing advice. Never give generic packing advice without checking the actual weather forecast first.
+            You MUST use the getForecast tool to check the current weather before providing advice. Never give generic packing advice without checking the actual weather forecast first.
             """;
 
     /**
@@ -59,6 +59,6 @@ public class WithToolsOpenAI {
         print("=== OpenAI with Tools Example ===");
         var claude = new WithToolsOpenAI();
         claude.chatWithTools("What kind of clothes do I need for a short trip to Paris?");
-        claude.chatWithTools("And for London?");
+        //claude.chatWithTools("And for London?");
     }
 }

@@ -13,14 +13,14 @@ import static util.ResponseHelper.*;
 public class RequestAnthropic {
     private static final AnthropicChatModelName MODEL_NAME = AnthropicChatModelName.CLAUDE_SONNET_4_6;
 
-    void simpleQuery(String query) {
+    void simpleQuery(String prompt) {
         ChatModel model = AnthropicChatModel.builder()
                 .apiKey(System.getenv("ANTHROPIC_API_KEY"))
                 .modelName(MODEL_NAME)
                 .build();
 
-        String response = model.chat(query);
-        printRequestResponseInfo(query, MODEL_NAME.name(), response);
+        String response = model.chat(prompt);
+        printRequestResponseInfo(prompt, MODEL_NAME.name(), response);
     }
 
     /*
@@ -28,7 +28,7 @@ public class RequestAnthropic {
     * mvn dependency to ch.qos.logback
     * config logging in: logback.xml
      */
-    void simpleQueryWithLogging(String query) {
+    void simpleQueryWithLogging(String prompt) {
         ChatModel model = AnthropicChatModel.builder()
                 .apiKey(System.getenv("ANTHROPIC_API_KEY"))
                 .modelName(MODEL_NAME)
@@ -36,32 +36,32 @@ public class RequestAnthropic {
                 .logResponses(true)
                 .build();
 
-        String response = model.chat(query);
-        printRequestResponseInfo(query, MODEL_NAME.name(), response);
+        String response = model.chat(prompt);
+        printRequestResponseInfo(prompt, MODEL_NAME.name(), response);
     }
 
 
-    void simpleQueryWithSystemMessage(String query) {
+    void simpleQueryWithSystemMessage(String prompt) {
         ChatModel model = AnthropicChatModel.builder()
                 .apiKey(System.getenv("ANTHROPIC_API_KEY"))
                 .modelName(MODEL_NAME)
                 .build();
 
         SystemMessage systemMessage = SystemMessage.from("You are a software developer expert.");
-        UserMessage userMessage = UserMessage.from(query);
+        UserMessage userMessage = UserMessage.from(prompt);
 
         ChatResponse response = model.chat(systemMessage, userMessage);
-        printRequestResponseInfo(query, MODEL_NAME.name(), response.aiMessage().text());
+        printRequestResponseInfo(prompt, MODEL_NAME.name(), response.aiMessage().text());
     }
 
 
-    void simpleQueryWithResponseMetaData(String query) {
+    void simpleQueryWithResponseMetaData(String prompt) {
         ChatModel model = AnthropicChatModel.builder()
                 .apiKey(System.getenv("ANTHROPIC_API_KEY"))
                 .modelName(MODEL_NAME)
                 .build();
 
-        UserMessage userMessage = UserMessage.from(query);
+        UserMessage userMessage = UserMessage.from(prompt);
         ChatResponse response = model.chat(userMessage);
 
         String content = response.aiMessage().text();
@@ -73,12 +73,11 @@ public class RequestAnthropic {
     }
 
     void main() {
-        var query = "What is LangChain4j? Please answer in 1 sentence.";
-        //var query = "Why should I use LangChain4j instead of simple REST calls to access an LLM? Please answer in 1 sentence.";
+        var prompt = "What is LangChain4j? Please answer in 1 sentence.";
         var claude = new RequestAnthropic();
-        claude.simpleQuery(query);
-        claude.simpleQueryWithSystemMessage(query);
-        claude.simpleQueryWithLogging(query);
-        claude.simpleQueryWithResponseMetaData(query);
+        claude.simpleQuery(prompt);
+        claude.simpleQueryWithSystemMessage(prompt);
+        claude.simpleQueryWithLogging(prompt);
+        claude.simpleQueryWithResponseMetaData(prompt);
     }
 }

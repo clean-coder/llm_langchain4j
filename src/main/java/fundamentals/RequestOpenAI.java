@@ -9,7 +9,7 @@ import static util.ResponseHelper.printRequestResponseInfo;
 public class RequestOpenAI {
     private static final OpenAiChatModelName MODEL_NAME = OpenAiChatModelName.GPT_4_1_NANO;
 
-    void simpleQuery(String query) {
+    void simpleQuery(String prompt) {
         ChatModel model = OpenAiChatModel.builder()
                 .apiKey(System.getenv("OPENAI_API_KEY"))
                 .modelName(MODEL_NAME)
@@ -17,12 +17,12 @@ public class RequestOpenAI {
                 .logResponses(true)
                 .build();
 
-        String response = model.chat(query);
-        printRequestResponseInfo(query, MODEL_NAME.name(), response);
+        String response = model.chat(prompt);
+        printRequestResponseInfo(prompt, MODEL_NAME.name(), response);
     }
 
     void main() {
-        var query = "What is LangChain4j? Please answer in max 1 sentences.";
-        new RequestOpenAI().simpleQuery(query);
+        var prompt = "What is LangChain4j? Please answer in max 1 sentences.";
+        new RequestOpenAI().simpleQuery(prompt);
     }
 }

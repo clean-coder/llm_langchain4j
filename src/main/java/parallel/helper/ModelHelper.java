@@ -9,7 +9,7 @@ public class ModelHelper {
 
     public static ChatModel CLAUDE = AnthropicChatModel.builder()
             .apiKey(System.getenv("ANTHROPIC_API_KEY"))
-            .modelName("claude-sonnet-4-5-20250929")
+            .modelName("claude-sonnet-4-5")
             .temperature(0.3)
             .build();
 
@@ -21,7 +21,7 @@ public class ModelHelper {
 
     public static ChatModel GOOGLE = GoogleAiGeminiChatModel.builder()
             .apiKey(System.getenv("GEMINI_API_KEY"))
-            .modelName("gemini-2.5-flash-lite")
+            .modelName("gemini-2.5-pro")
             .temperature(0.3)
             .build();
 }

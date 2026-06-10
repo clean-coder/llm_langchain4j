@@ -23,8 +23,7 @@ public class WithChatMemory {
                 .logRequests(true)
                 .build();
 
-        UserMessage firstMessage = UserMessage.from(prompt);
-        memory.add(firstMessage);
+        memory.add(UserMessage.from(prompt));
 
         ChatResponse response = model.chat(memory.messages());
         memory.add(response.aiMessage());

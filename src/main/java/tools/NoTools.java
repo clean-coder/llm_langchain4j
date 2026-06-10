@@ -9,14 +9,14 @@ import static util.ResponseHelper.*;
 public class NoTools {
     private static final AnthropicChatModelName MODEL_NAME = AnthropicChatModelName.CLAUDE_SONNET_4_6;
 
-    void chat(String query) {
+    void chat(String prompt) {
         ChatModel model = AnthropicChatModel.builder()
                 .apiKey(System.getenv("ANTHROPIC_API_KEY"))
                 .modelName(MODEL_NAME)
                 .build();
 
-        String response = model.chat(query);
-        printRequestResponseInfo(query, MODEL_NAME.name(), response);
+        String response = model.chat(prompt);
+        printRequestResponseInfo(prompt, MODEL_NAME.name(), response);
     }
 
     void main() {

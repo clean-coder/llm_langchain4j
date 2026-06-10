@@ -36,7 +36,7 @@ public class WithToolsOpenAI {
         String chat(String message);
     }
 
-    void chatWithTools(String query) {
+    void chatWithTools(String prompt) {
         ChatModel model = OpenAiChatModel.builder()
                 .apiKey(System.getenv("OPENAI_API_KEY"))
                 .modelName(MODEL_NAME)
@@ -51,8 +51,8 @@ public class WithToolsOpenAI {
                 .tools(new WeatherTool())
                 .build();
 
-        String response = assistant.chat(query);
-        printRequestResponseInfo(query, MODEL_NAME.name(), response);
+        String response = assistant.chat(prompt);
+        printRequestResponseInfo(prompt, MODEL_NAME.name(), response);
     }
 
     void main() {

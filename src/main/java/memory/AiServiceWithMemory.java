@@ -22,7 +22,7 @@ public class AiServiceWithMemory {
 
     private ChatMemory memory = MessageWindowChatMemory.withMaxMessages(10);
 
-    void chatWithMemory(String query) {
+    void chatWithMemory(String prompt) {
         ChatModel model = AnthropicChatModel.builder()
                 .apiKey(System.getenv("ANTHROPIC_API_KEY"))
                 .modelName(MODEL_NAME)
@@ -35,8 +35,8 @@ public class AiServiceWithMemory {
                 .chatMemory(memory)
                 .build();
 
-        String response = assistant.chat(query);
-        print(query, response);
+        String response = assistant.chat(prompt);
+        print(prompt, response);
     }
 
     private void print(String query, String response) {

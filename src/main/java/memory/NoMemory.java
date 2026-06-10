@@ -9,14 +9,14 @@ import static java.lang.IO.println;
 public class NoMemory {
     private static final AnthropicChatModelName MODEL_NAME = AnthropicChatModelName.CLAUDE_SONNET_4_6;
 
-    void chat(String query) {
+    void chat(String prompt) {
         ChatModel model = AnthropicChatModel.builder()
                 .apiKey(System.getenv("ANTHROPIC_API_KEY"))
                 .modelName(MODEL_NAME)
                 .build();
 
-        String response = model.chat(query);
-        print(query, response);
+        String response = model.chat(prompt);
+        print(prompt, response);
     }
 
     private void print(String query, String response) {

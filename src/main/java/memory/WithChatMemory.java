@@ -16,20 +16,20 @@ public class WithChatMemory {
     // Create chat memory with a window of 10 messages
     private ChatMemory memory = MessageWindowChatMemory.withMaxMessages(10);
 
-    void chatWithChatMemory(String query) {
+    void chatWithChatMemory(String prompt) {
         ChatModel model = AnthropicChatModel.builder()
                 .apiKey(System.getenv("ANTHROPIC_API_KEY"))
                 .modelName(MODEL_NAME)
                 .logRequests(true)
                 .build();
 
-        UserMessage firstMessage = UserMessage.from(query);
+        UserMessage firstMessage = UserMessage.from(prompt);
         memory.add(firstMessage);
 
         ChatResponse response = model.chat(memory.messages());
         memory.add(response.aiMessage());
 
-        print(query, response);
+        print(prompt, response);
     }
 
     private void print(String query, ChatResponse response) {

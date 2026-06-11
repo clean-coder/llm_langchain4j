@@ -41,17 +41,17 @@ public class ParallelChainsWithVirtualThreads {
 
         // Fan out: one virtual thread per LLM call — cheap blocking, no thread pool exhaustion
         try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
-            Future<LibraryResult> claudeFuture = executor.submit(() ->
+            var claudeFuture = executor.submit(() ->
                     new LibraryResult("claude", getLLMLibraries(CLAUDE, language, numberOfItems)));
 
-            Future<LibraryResult> openaiFuture = executor.submit(() ->
+            var openaiFuture = executor.submit(() ->
                     new LibraryResult("openai", getLLMLibraries(OPENAI, language, numberOfItems)));
 
-            Future<LibraryResult> geminiFuture = executor.submit(() ->
+            var geminiFuture = executor.submit(() ->
                     new LibraryResult("gemini", getLLMLibraries(GOOGLE, language, numberOfItems)));
 
             // Blocks until each result is ready; executor auto-closes after try block
-            List<LibraryResult> results = List.of(
+            var results = List.of(
                     claudeFuture.get(),
                     openaiFuture.get(),
                     geminiFuture.get()

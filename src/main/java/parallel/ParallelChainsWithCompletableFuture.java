@@ -19,13 +19,13 @@ public class ParallelChainsWithCompletableFuture {
         var language = "Python";
 
         // Fan out: run all three in parallel (equivalent to RunnableParallel in LangChain)
-        CompletableFuture<LibraryResult> claudeFuture = CompletableFuture.supplyAsync(() ->
+        var claudeFuture = CompletableFuture.supplyAsync(() ->
                 new LibraryResult("claude", getLLMLibraries(CLAUDE, language, numberOfItems)));
 
-        CompletableFuture<LibraryResult> openaiFuture = CompletableFuture.supplyAsync(() ->
+        var openaiFuture = CompletableFuture.supplyAsync(() ->
                 new LibraryResult("openai", getLLMLibraries(OPENAI, language, numberOfItems)));
 
-        CompletableFuture<LibraryResult> geminiFuture = CompletableFuture.supplyAsync(() ->
+        var geminiFuture = CompletableFuture.supplyAsync(() ->
                 new LibraryResult("gemini", getLLMLibraries(GOOGLE, language, numberOfItems)));
 
         // Collect all results (blocks until all three complete)

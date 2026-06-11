@@ -13,7 +13,7 @@ import static util.ResponseHelper.printRequestResponseInfo;
 // works fine without a system prompt.
 public class WithToolsClaude {
     private static final AnthropicChatModelName MODEL_NAME = AnthropicChatModelName.CLAUDE_SONNET_4_6;
-    private ChatMemory memory = MessageWindowChatMemory.withMaxMessages(10);
+    private final ChatMemory memory = MessageWindowChatMemory.withMaxMessages(10);
 
     /**
      * Assistant interface for AI services with tool integration.

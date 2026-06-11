@@ -5,7 +5,6 @@ import parallel.dataStructure.LibraryResult;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import static java.lang.IO.println;
 import static parallel.helper.FileHelper.writeToFile;

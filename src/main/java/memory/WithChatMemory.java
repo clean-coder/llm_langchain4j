@@ -14,7 +14,7 @@ public class WithChatMemory {
     private static final AnthropicChatModelName MODEL_NAME = AnthropicChatModelName.CLAUDE_SONNET_4_6;
 
     // Create chat memory with a window of 10 messages
-    private ChatMemory memory = MessageWindowChatMemory.withMaxMessages(10);
+    private final ChatMemory memory = MessageWindowChatMemory.withMaxMessages(10);
 
     void chatWithChatMemory(String prompt) {
         ChatModel model = AnthropicChatModel.builder()

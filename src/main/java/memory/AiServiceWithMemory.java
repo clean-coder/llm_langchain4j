@@ -20,7 +20,7 @@ public class AiServiceWithMemory {
         String chat(String message);
     }
 
-    private ChatMemory memory = MessageWindowChatMemory.withMaxMessages(10);
+    private final ChatMemory memory = MessageWindowChatMemory.withMaxMessages(10);
 
     void chatWithMemory(String prompt) {
         ChatModel model = AnthropicChatModel.builder()

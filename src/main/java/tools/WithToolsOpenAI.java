@@ -14,10 +14,10 @@ import static util.ResponseHelper.printRequestResponseInfo;
 // needs a system prompt. otherwise the model will not use the tool and give generic packing advice without checking the weather forecast first.
 public class WithToolsOpenAI {
     private static final OpenAiChatModelName MODEL_NAME = OpenAiChatModelName.GPT_5_MINI;
-    private ChatMemory memory = MessageWindowChatMemory.withMaxMessages(10);
+    private final ChatMemory memory = MessageWindowChatMemory.withMaxMessages(10);
 
     private static final String SYSTEM_PROMPT = """
-            You are a helpful travel assistant. 
+            You are a helpful travel assistant.
             
             IMPORTANT: When users ask about:
             - What to pack for a trip

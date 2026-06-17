@@ -3,6 +3,8 @@ package parallel.service;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.input.structured.StructuredPrompt;
 import dev.langchain4j.service.AiServices;
+import dev.langchain4j.service.SystemMessage;
+import dev.langchain4j.service.UserMessage;
 import parallel.dataStructure.LibraryResult;
 
 import java.util.List;
@@ -18,8 +20,8 @@ public class ConsolidateLibrariesService {
     }
 
     interface ConsolidateService {
-        @dev.langchain4j.service.SystemMessage("You are an ai developer expert.")
-        String consolidate(@dev.langchain4j.service.UserMessage ConsolidatePrompt prompt);
+        @SystemMessage("You are an ai developer expert.")
+        String consolidate(@UserMessage ConsolidatePrompt prompt);
     }
 
     public static String consolidate(ChatModel model, String language, List<LibraryResult> llmResults) {
